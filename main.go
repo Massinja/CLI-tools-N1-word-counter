@@ -8,12 +8,16 @@ import (
 	"os"
 )
 
-func count(r io.Reader, countLines bool) int {
+func count(r io.Reader, countLines bool, countBytes bool) int {
 	// scanner is used to read text from a reader
 	scanner := bufio.NewScanner(r)
 
-	if !countLines {
-		// split scan to words (default: lines)
+	// scanner default: lines
+	if countLines {
+		scanner.Split(bufio.ScanLines)
+	} else if countBytes {
+		scanner.Split(bufio.ScanBytes)
+	} else {
 		scanner.Split(bufio.ScanWords)
 	}
 
@@ -29,8 +33,11 @@ func count(r io.Reader, countLines bool) int {
 func main() {
 	// add a flag to count lines instead of words
 	lines := flag.Bool("l", false, "Count lines")
+
+	// add a flag to count bytes
+	bytes := flag.Bool("b", false, "Count bytes")
 	flag.Parse()
 
-	fmt.Println(count(os.Stdin, *lines))
+	fmt.Println(count(os.Stdin, *lines, *bytes))
 
 }
